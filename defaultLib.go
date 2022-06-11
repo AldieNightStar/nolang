@@ -166,6 +166,30 @@ func defaultJumpLibrary(s *Scope) {
 		s.Pos = newPos
 		return nil, nil
 	})
+	s.Mem["if"] = NoFunc(func(s *Scope) (any, error) {
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		b, ok := v.(bool)
+		if !ok {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		v, err = s.Step()
+		if err != nil {
+			return nil, err
+		}
+		posF, ok := v.(float64)
+		if !ok {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		pos := int(posF)
+		if b {
+			s.CallStack.Push(s.Pos)
+			s.Pos = pos
+		}
+		return nil, nil
+	})
 }
 
 func defaultTimeLibrary(s *Scope) {

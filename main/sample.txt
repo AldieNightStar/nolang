@@ -1,13 +1,6 @@
-call @test
-call @test
-call @test
+if false @test
 ret
 
 :test
-    print "A"
-    call @test2
-    ret
-
-:test2
-    print "B"
+    print "Working"
     ret
