@@ -1,0 +1,23 @@
+set "s" new-stack
+
+push s @a
+push s @b
+push s @c
+push s @b
+push s @b
+push s @b
+push s @a
+
+call pop s
+call pop s
+call pop s
+call pop s
+call pop s
+call pop s
+call pop s
+
+ret
+
+:a print "A" ret
+:b print "B" ret
+:c print "C" ret
