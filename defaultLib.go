@@ -12,6 +12,7 @@ func defaultLib(s *Scope) {
 	defaultBoolLib(s)
 	defaultJumpLibrary(s)
 	defaultTimeLibrary(s)
+	defaultComparingLibrary(s)
 }
 
 func defaultMemLib(s *Scope) {
@@ -220,4 +221,34 @@ func defaultTimeLibrary(s *Scope) {
 		time.Sleep(time.Duration(float64(time.Second) * n))
 		return nil, nil
 	})
+}
+
+func defaultComparingLibrary(s *Scope) {
+	s.Mem["<"] = defaultComparingLibraryNumbersFunc(func(a, b float64) bool { return a < b })
+	s.Mem[">"] = defaultComparingLibraryNumbersFunc(func(a, b float64) bool { return a > b })
+	s.Mem["<="] = defaultComparingLibraryNumbersFunc(func(a, b float64) bool { return a <= b })
+	s.Mem[">="] = defaultComparingLibraryNumbersFunc(func(a, b float64) bool { return a >= b })
+	s.Mem["=="] = defaultComparingLibraryNumbersFunc(func(a, b float64) bool { return a == b })
+}
+
+func defaultComparingLibraryNumbersFunc(f func(a, b float64) bool) NoFunc {
+	return func(s *Scope) (any, error) {
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		a, ok := NumberToFloat(v)
+		if !ok {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		v, err = s.Step()
+		if err != nil {
+			return nil, err
+		}
+		b, ok := NumberToFloat(v)
+		if !ok {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		return f(a, b), nil
+	}
 }

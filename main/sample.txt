@@ -1,4 +1,4 @@
-if-else false @yes @no
+if-else > 20 10 @yes @no
 ret
 
 :yes
