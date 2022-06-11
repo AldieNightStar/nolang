@@ -83,6 +83,28 @@ func defaultArrayLib(s *Scope) {
 		}
 		return arr, nil
 	})
+	s.Mem["arr-each"] = NoFunc(func(s *Scope) (any, error) {
+		arr, err := StepAndCast[[]any](s, nil)
+		if err != nil {
+			return nil, err
+		}
+		name := NextAndGetName(s)
+		if name == "" {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		pos, err := StepAndCastInt(s)
+		if err != nil {
+			return nil, err
+		}
+		for _, elem := range arr {
+			s.Mem[name] = elem
+			err := s.RunLocal(pos)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return nil, nil
+	})
 }
 
 func defaultStackLib(s *Scope) {
@@ -378,6 +400,26 @@ func defaultJumpLibrary(s *Scope) {
 			s.Pos = pos
 		}
 		s.Mem[name] = num
+		return nil, nil
+	})
+	s.Mem["repeat"] = NoFunc(func(s *Scope) (any, error) {
+		// repeat count 10 @process
+		name := NextAndGetName(s)
+		if name == "" {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		count, err := StepAndCastInt(s)
+		if err != nil {
+			return nil, err
+		}
+		label, err := StepAndCastInt(s)
+		if err != nil {
+			return nil, err
+		}
+		for i := 0; i < count; i++ {
+			s.Mem[name] = float64(i)
+			s.RunLocal(label)
+		}
 		return nil, nil
 	})
 }

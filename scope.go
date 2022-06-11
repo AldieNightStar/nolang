@@ -67,6 +67,24 @@ func (s *Scope) Run() error {
 	}
 }
 
+func (s *Scope) RunLocal(pos int) error {
+	oldCallStack := s.CallStack
+	curPos := s.Pos
+
+	s.Pos = pos
+	s.CallStack = NewStack[int](256)
+
+	err := s.Run()
+
+	s.CallStack = oldCallStack
+	s.Pos = curPos
+
+	if err != nil && !isCodeEndErr(err) {
+		return err
+	}
+	return nil
+}
+
 func NewScope(code []any) *Scope {
 	return &Scope{Pos: 0, Code: code, Mem: make(map[string]any, 64), LastLine: 0, CallStack: NewStack[int](1024)}
 }

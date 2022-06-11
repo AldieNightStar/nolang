@@ -22,7 +22,7 @@ ret
     sleep 1 # Sleep 1 second
     set packets socket-receive connection
     !if < arr-len packets 1 @retry
-    for-each packets packet @process-packet
+    arr-each packets packet @process-packet
     log "Operation done. Disconnecting..."
     socket-disconnect connection
     log "Done"

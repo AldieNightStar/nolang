@@ -64,6 +64,14 @@ func NextAndGetName(s *Scope) string {
 	return etc.Value
 }
 
+func StepAndCastInt(s *Scope) (val int, err error) {
+	f, err := StepAndCast[float64](s, 0)
+	if err != nil {
+		return 0, err
+	}
+	return int(f), nil
+}
+
 func StepAndCast[T any](s *Scope, def T) (val T, err error) {
 	v, err := s.Step()
 	if err != nil {

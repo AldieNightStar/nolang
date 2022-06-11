@@ -30,3 +30,7 @@ func isErrEq(e error, reason string) bool {
 	}
 	return false
 }
+
+func isCodeEndErr(e error) bool {
+	return isErrEq(e, ErrCodeEnd)
+}

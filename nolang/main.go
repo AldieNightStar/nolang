@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	args := getArgs(false)
+	args := getArgs(true)
 	if len(args) < 1 {
 		fmt.Println("Usage:\n\tnolang file")
 		return
