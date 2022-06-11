@@ -7,10 +7,11 @@ import (
 )
 
 type Scope struct {
-	Pos      int
-	Code     []any
-	Mem      map[string]any
-	LastLine int
+	Pos       int
+	Code      []any
+	Mem       map[string]any
+	LastLine  int
+	CallStack *Stack[int]
 }
 
 func (s *Scope) Next() any {
@@ -72,5 +73,5 @@ func (s *Scope) LoadDefaultLib() *Scope {
 }
 
 func NewScope(code []any) *Scope {
-	return &Scope{Pos: 0, Code: code, Mem: make(map[string]any, 64), LastLine: 0}
+	return &Scope{Pos: 0, Code: code, Mem: make(map[string]any, 64), LastLine: 0, CallStack: NewStack[int](1024)}
 }
