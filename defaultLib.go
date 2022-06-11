@@ -2,6 +2,7 @@ package nolang
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -61,6 +62,24 @@ func defaultStrLib(s *Scope) {
 			return nil, newError(ErrWrongType, s.LastLine)
 		}
 		return s1 + s2, nil
+	})
+	s.Mem["num"] = NoFunc(func(s *Scope) (any, error) {
+		str, err := StepAndCast(s, "")
+		if err != nil {
+			return nil, err
+		}
+		f, err := strconv.ParseFloat(str, 64)
+		if err != nil {
+			return nil, err
+		}
+		return f, nil
+	})
+	s.Mem["str"] = NoFunc(func(s *Scope) (any, error) {
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		return fmt.Sprint(v), nil
 	})
 }
 
@@ -183,7 +202,44 @@ func defaultJumpLibrary(s *Scope) {
 		}
 		return nil, nil
 	})
+	s.Mem["!if"] = NoFunc(func(s *Scope) (any, error) {
+		b, err := StepAndCast(s, false)
+		if err != nil {
+			return nil, err
+		}
+		f, err := StepAndCast[float64](s, 0)
+		if err != nil {
+			return nil, err
+		}
+		pos := int(f)
+		if b {
+			s.Pos = pos
+		}
+		return nil, nil
+	})
 	s.Mem["if-else"] = NoFunc(func(s *Scope) (any, error) {
+		b, err := StepAndCast(s, false)
+		if err != nil {
+			return nil, err
+		}
+		f1, err := StepAndCast[float64](s, 0)
+		if err != nil {
+			return nil, err
+		}
+		f2, err := StepAndCast[float64](s, 0)
+		if err != nil {
+			return nil, err
+		}
+		pos1 := int(f1)
+		pos2 := int(f2)
+		if b {
+			s.Pos = pos1
+		} else {
+			s.Pos = pos2
+		}
+		return nil, nil
+	})
+	s.Mem["!if-else"] = NoFunc(func(s *Scope) (any, error) {
 		b, err := StepAndCast(s, false)
 		if err != nil {
 			return nil, err

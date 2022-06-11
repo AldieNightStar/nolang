@@ -13,7 +13,7 @@ type NoLangErr struct {
 }
 
 func (e *NoLangErr) Error() string {
-	return e.Reason
+	return e.String()
 }
 
 func (e *NoLangErr) String() string {
