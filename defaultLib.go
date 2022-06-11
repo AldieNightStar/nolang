@@ -167,26 +167,41 @@ func defaultJumpLibrary(s *Scope) {
 		return nil, nil
 	})
 	s.Mem["if"] = NoFunc(func(s *Scope) (any, error) {
-		v, err := s.Step()
+		b, err := StepAndCast(s, false)
 		if err != nil {
 			return nil, err
 		}
-		b, ok := v.(bool)
-		if !ok {
-			return nil, newError(ErrWrongType, s.LastLine)
-		}
-		v, err = s.Step()
+		f, err := StepAndCast[float64](s, 0)
 		if err != nil {
 			return nil, err
 		}
-		posF, ok := v.(float64)
-		if !ok {
-			return nil, newError(ErrWrongType, s.LastLine)
-		}
-		pos := int(posF)
+		pos := int(f)
 		if b {
 			s.CallStack.Push(s.Pos)
 			s.Pos = pos
+		}
+		return nil, nil
+	})
+	s.Mem["if-else"] = NoFunc(func(s *Scope) (any, error) {
+		b, err := StepAndCast(s, false)
+		if err != nil {
+			return nil, err
+		}
+		f1, err := StepAndCast[float64](s, 0)
+		if err != nil {
+			return nil, err
+		}
+		f2, err := StepAndCast[float64](s, 0)
+		if err != nil {
+			return nil, err
+		}
+		pos1 := int(f1)
+		pos2 := int(f2)
+		s.CallStack.Push(s.Pos)
+		if b {
+			s.Pos = pos1
+		} else {
+			s.Pos = pos2
 		}
 		return nil, nil
 	})

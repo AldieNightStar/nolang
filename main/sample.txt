@@ -1,6 +1,9 @@
-if false @test
+if-else false @yes @no
 ret
 
-:test
+:yes
     print "Working"
+    ret
+:no
+    print "Not working"
     ret

@@ -103,3 +103,15 @@ func NumberToFloat(n any) (float64, bool) {
 	}
 	return 0, false
 }
+
+func StepAndCast[T any](s *Scope, def T) (val T, err error) {
+	v, err := s.Step()
+	if err != nil {
+		return def, err
+	}
+	t, ok := v.(T)
+	if !ok {
+		return def, newError(ErrWrongType, s.LastLine)
+	}
+	return t, nil
+}
