@@ -15,10 +15,6 @@ func main() {
 		return
 	}
 	scope := nolang.LoadFile(args[0])
-	scope.Mem["reset"] = nolang.NoFunc(func(s *nolang.Scope) (any, error) {
-		s.Pos = 0
-		return nil, nil
-	})
 	err := scope.Run()
 	if err != nil {
 		fmt.Println(err)

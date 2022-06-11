@@ -1,1 +1,1 @@
-print name-age "Ihor" 33
+print 1
