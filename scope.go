@@ -67,11 +67,6 @@ func (s *Scope) Run() error {
 	}
 }
 
-func (s *Scope) LoadDefaultLib() *Scope {
-	defaultLib(s)
-	return s
-}
-
 func NewScope(code []any) *Scope {
 	return &Scope{Pos: 0, Code: code, Mem: make(map[string]any, 64), LastLine: 0, CallStack: NewStack[int](1024)}
 }

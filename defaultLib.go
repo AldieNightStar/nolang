@@ -14,6 +14,33 @@ func defaultLib(s *Scope) {
 	defaultJumpLibrary(s)
 	defaultTimeLibrary(s)
 	defaultComparingLibrary(s)
+	defaultStackLib(s)
+}
+
+func defaultStackLib(s *Scope) {
+	s.Mem["new-stack"] = NoFunc(func(s *Scope) (any, error) {
+		return NewStack[any](1024), nil
+	})
+	s.Mem["push"] = NoFunc(func(s *Scope) (any, error) {
+		stack, err := StepAndCast[*Stack[any]](s, nil)
+		if err != nil {
+			return nil, err
+		}
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		stack.Push(v)
+		return nil, nil
+	})
+	s.Mem["pop"] = NoFunc(func(s *Scope) (any, error) {
+		stack, err := StepAndCast[*Stack[any]](s, nil)
+		if err != nil {
+			return nil, err
+		}
+		v, _ := stack.Pop(nil)
+		return v, nil
+	})
 }
 
 func defaultMemLib(s *Scope) {

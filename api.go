@@ -11,7 +11,9 @@ func Load(code string) *Scope {
 	toks = filterComments(toks)
 	toks, labels = processLabelDefs(toks)
 	toks = processLabelPointers(labels, toks)
-	return NewScope(toks)
+	s := NewScope(toks)
+	defaultLib(s)
+	return s
 }
 
 func LoadFile(filename string) *Scope {

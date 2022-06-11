@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	scope := nolang.LoadFile("sample.txt").LoadDefaultLib()
+	scope := nolang.LoadFile("sample.txt")
 	err := scope.Run()
 	if err != nil {
 		fmt.Println(err)
