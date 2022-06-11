@@ -26,6 +26,7 @@ func defaultLib(s *Scope) {
 func defaultValues(s *Scope) {
 	s.Mem["nil"] = nil
 	s.Mem["!!"] = stopValue
+	s.Mem["call-stack-size"] = float64(120)
 }
 
 func defaultArrayLib(s *Scope) {
@@ -96,9 +97,10 @@ func defaultArrayLib(s *Scope) {
 		if err != nil {
 			return nil, err
 		}
+		stackSize := int(s.Mem["call-stack-size"].(float64))
 		for _, elem := range arr {
 			s.Mem[name] = elem
-			err := s.RunLocal(pos)
+			err := s.RunLocal(stackSize, pos)
 			if err != nil {
 				return nil, err
 			}
@@ -416,9 +418,10 @@ func defaultJumpLibrary(s *Scope) {
 		if err != nil {
 			return nil, err
 		}
+		stackSize := int(s.Mem["call-stack-size"].(float64))
 		for i := 0; i < count; i++ {
 			s.Mem[name] = float64(i)
-			s.RunLocal(label)
+			s.RunLocal(stackSize, label)
 		}
 		return nil, nil
 	})

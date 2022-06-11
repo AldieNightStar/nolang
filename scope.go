@@ -67,12 +67,12 @@ func (s *Scope) Run() error {
 	}
 }
 
-func (s *Scope) RunLocal(pos int) error {
+func (s *Scope) RunLocal(stackSize int, pos int) error {
 	oldCallStack := s.CallStack
 	curPos := s.Pos
 
 	s.Pos = pos
-	s.CallStack = NewStack[int](256)
+	s.CallStack = NewStack[int](stackSize)
 
 	err := s.Run()
 
