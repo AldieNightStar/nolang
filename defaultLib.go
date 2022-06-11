@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+
+	"github.com/AldieNightStar/golexem"
 )
 
 func defaultLib(s *Scope) {
@@ -15,13 +17,54 @@ func defaultLib(s *Scope) {
 	defaultTimeLibrary(s)
 	defaultComparingLibrary(s)
 	defaultStackLib(s)
+	defaultArrayLib(s)
+}
+
+func defaultArrayLib(s *Scope) {
+	s.Mem["arr-new"] = NoFunc(func(s *Scope) (any, error) {
+		return make([]any, 0, 32), nil
+	})
+	s.Mem["arr-add"] = NoFunc(func(s *Scope) (any, error) {
+		arr, err := StepAndCast[[]any](s, nil)
+		if err != nil {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		arr = append(arr, v)
+		return arr, nil
+	})
+	s.Mem["arr-get"] = NoFunc(func(s *Scope) (any, error) {
+		arr, err := StepAndCast[[]any](s, nil)
+		if err != nil {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		idF, err := StepAndCast[float64](s, 0)
+		if err != nil {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		id := int(idF)
+		if id < 0 || id > len(arr) {
+			return nil, nil
+		}
+		return arr[id], nil
+	})
+	s.Mem["arr-len"] = NoFunc(func(s *Scope) (any, error) {
+		arr, err := StepAndCast[[]any](s, nil)
+		if err != nil {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		return float64(len(arr)), nil
+	})
 }
 
 func defaultStackLib(s *Scope) {
-	s.Mem["new-stack"] = NoFunc(func(s *Scope) (any, error) {
+	s.Mem["stack-new"] = NoFunc(func(s *Scope) (any, error) {
 		return NewStack[any](1024), nil
 	})
-	s.Mem["push"] = NoFunc(func(s *Scope) (any, error) {
+	s.Mem["stack-push"] = NoFunc(func(s *Scope) (any, error) {
 		stack, err := StepAndCast[*Stack[any]](s, nil)
 		if err != nil {
 			return nil, err
@@ -33,7 +76,7 @@ func defaultStackLib(s *Scope) {
 		stack.Push(v)
 		return nil, nil
 	})
-	s.Mem["pop"] = NoFunc(func(s *Scope) (any, error) {
+	s.Mem["stack-pop"] = NoFunc(func(s *Scope) (any, error) {
 		stack, err := StepAndCast[*Stack[any]](s, nil)
 		if err != nil {
 			return nil, err
@@ -45,14 +88,12 @@ func defaultStackLib(s *Scope) {
 
 func defaultMemLib(s *Scope) {
 	s.Mem["set"] = NoFunc(func(s *Scope) (any, error) {
-		val, err := s.Step()
-		if err != nil {
-			return nil, err
-		}
-		name, ok := val.(string)
-		if !ok {
+		nameToken := s.Next()
+		nameEtc, etcOk := nameToken.(golexem.ETC)
+		if !etcOk {
 			return nil, newError(ErrWrongType, s.LastLine)
 		}
+		name := nameEtc.Value
 		newVal, err := s.Step()
 		if err != nil {
 			return nil, err
@@ -286,6 +327,21 @@ func defaultJumpLibrary(s *Scope) {
 			s.Pos = pos1
 		} else {
 			s.Pos = pos2
+		}
+		return nil, nil
+	})
+	s.Mem["loop"] = NoFunc(func(s *Scope) (any, error) {
+		n, err := StepAndCast[float64](s, 0)
+		if err != nil {
+			return nil, err
+		}
+		posf, err := StepAndCast[float64](s, 0)
+		if err != nil {
+			return nil, err
+		}
+		pos := int(posf)
+		if n > 0 {
+			s.Pos = pos
 		}
 		return nil, nil
 	})
