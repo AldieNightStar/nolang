@@ -23,7 +23,8 @@ func filterComments(toks []any) []any {
 func processLabelDefs(toks []any) ([]any, map[string]int) {
 	labs := make(map[string]int, 64)
 	arr := make([]any, 0, 32)
-	for pos, tok := range toks {
+	pos := 0
+	for _, tok := range toks {
 		if etc, ok := tok.(golexem.ETC); ok {
 			if strings.HasPrefix(etc.Value, ":") {
 				labs[etc.Value[1:]] = pos
@@ -31,6 +32,7 @@ func processLabelDefs(toks []any) ([]any, map[string]int) {
 			}
 		}
 		arr = append(arr, tok)
+		pos += 1
 	}
 	return arr, labs
 }

@@ -4,5 +4,10 @@ call @test
 ret
 
 :test
-    print concat concat "YES" "-" "NO"
+    print "A"
+    call @test2
+    ret
+
+:test2
+    print "B"
     ret
