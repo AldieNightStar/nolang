@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/AldieNightStar/nolang"
 )
@@ -9,7 +10,7 @@ import (
 func main() {
 	// args := []string{"sample.r"}``
 	// args := os.Args[1:]
-	args := []string{"sample.r"}
+	args := os.Args[1:]
 	if len(args) < 1 {
 		fmt.Println("Usage:\n\tnolang file")
 		return
