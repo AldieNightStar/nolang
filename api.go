@@ -11,5 +11,5 @@ func Load(code string) *Scope {
 }
 
 func LoadFile(filename string) *Scope {
-	return Load(ReadFile(filename))
+	return Load(readFile(filename))
 }

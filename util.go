@@ -19,7 +19,7 @@ func filterComments(toks []any) []any {
 	return res
 }
 
-func ReadFile(name string) string {
+func readFile(name string) string {
 	f, err := os.Open(name)
 
 	if err != nil {

@@ -1,1 +1,1 @@
-print "Hello!"
+set "fine" add 32 1
