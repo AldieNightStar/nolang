@@ -8,7 +8,10 @@ import (
 	"github.com/AldieNightStar/golexem"
 )
 
+var stopValue = &struct{}{}
+
 func defaultLib(s *Scope) {
+	defaultValues(s)
 	defaultStrLib(s)
 	defaultMemLib(s)
 	defaultMathLib(s)
@@ -18,6 +21,11 @@ func defaultLib(s *Scope) {
 	defaultComparingLibrary(s)
 	defaultStackLib(s)
 	defaultArrayLib(s)
+}
+
+func defaultValues(s *Scope) {
+	s.Mem["nil"] = nil
+	s.Mem["!!"] = stopValue
 }
 
 func defaultArrayLib(s *Scope) {
@@ -57,6 +65,23 @@ func defaultArrayLib(s *Scope) {
 			return nil, newError(ErrWrongType, s.LastLine)
 		}
 		return float64(len(arr)), nil
+	})
+	s.Mem["arr-all"] = NoFunc(func(s *Scope) (any, error) {
+		arr, err := StepAndCast[[]any](s, nil)
+		if err != nil {
+			return nil, err
+		}
+		for {
+			v, err := s.Step()
+			if err != nil {
+				return nil, err
+			}
+			if v == stopValue {
+				break
+			}
+			arr = append(arr, v)
+		}
+		return arr, nil
 	})
 }
 
@@ -331,18 +356,28 @@ func defaultJumpLibrary(s *Scope) {
 		return nil, nil
 	})
 	s.Mem["loop"] = NoFunc(func(s *Scope) (any, error) {
-		n, err := StepAndCast[float64](s, 0)
+		name := NextAndGetName(s)
+		if name == "" {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		posF, err := StepAndCast[float64](s, 0)
 		if err != nil {
 			return nil, err
 		}
-		posf, err := StepAndCast[float64](s, 0)
-		if err != nil {
-			return nil, err
+		pos := int(posF)
+		val, ok := s.Mem[name]
+		if !ok {
+			return nil, nil
 		}
-		pos := int(posf)
-		if n > 0 {
+		num, ok := val.(float64)
+		if !ok {
+			return nil, nil
+		}
+		num -= 1
+		if num > 0 {
 			s.Pos = pos
 		}
+		s.Mem[name] = num
 		return nil, nil
 	})
 }

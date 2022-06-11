@@ -1,24 +1,10 @@
-set a arr-new
+set a arr-all arr-new
+    10 20 30 40 50 60 70
+!!
 
-set a arr-add a "a"
-set a arr-add a "b"
-set a arr-add a "c"
-set a arr-add a "d"
-set a arr-add a "e"
-
-set aptr 0
-set val 0
-
-set x 100
-:lp
-    set x sub x 1
-    call @get-val
+set cnt arr-len a
+:foreach
+    set id sub arr-len a cnt
+    set val arr-get a id
     print val
-    sleep 0.01
-    loop x @lp
-
-:get-val
-    set aptr add aptr 1
-    set aptr mod aptr arr-len a
-    set val arr-get a aptr
-    ret
+    loop cnt @foreach

@@ -104,6 +104,18 @@ func NumberToFloat(n any) (float64, bool) {
 	return 0, false
 }
 
+func NextAndGetName(s *Scope) string {
+	t := s.Next()
+	if t == nil {
+		return ""
+	}
+	etc, ok := t.(golexem.ETC)
+	if !ok {
+		return ""
+	}
+	return etc.Value
+}
+
 func StepAndCast[T any](s *Scope, def T) (val T, err error) {
 	v, err := s.Step()
 	if err != nil {
