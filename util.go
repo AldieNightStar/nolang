@@ -115,3 +115,39 @@ func StepAndCast[T any](s *Scope, def T) (val T, err error) {
 	}
 	return t, nil
 }
+
+func StepAndCast2[A any, B any](s *Scope, def1 A, def2 B) (a A, b B, err error) {
+	val1, err := StepAndCast(s, def1)
+	if err != nil {
+		return def1, def2, err
+	}
+	val2, err := StepAndCast(s, def2)
+	if err != nil {
+		return def1, def2, err
+	}
+	return val1, val2, nil
+}
+
+func StepAndCast3[A any, B any, C any](s *Scope, def1 A, def2 B, def3 C) (a A, b B, c C, err error) {
+	val1, val2, err := StepAndCast2(s, def1, def2)
+	if err != nil {
+		return def1, def2, def3, err
+	}
+	val3, err := StepAndCast(s, def3)
+	if err != nil {
+		return def1, def2, def3, err
+	}
+	return val1, val2, val3, nil
+}
+
+func StepAndCast4[A any, B any, C any, D any](s *Scope, def1 A, def2 B, def3 C, def4 D) (a A, b B, c C, d D, err error) {
+	val1, val2, err := StepAndCast2(s, def1, def2)
+	if err != nil {
+		return def1, def2, def3, def4, err
+	}
+	val3, val4, err := StepAndCast2(s, def3, def4)
+	if err != nil {
+		return def1, def2, def3, def4, err
+	}
+	return val1, val2, val3, val4, nil
+}

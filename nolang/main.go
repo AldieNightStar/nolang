@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	// args := []string{"sample.r"}
+	// args := []string{"sample.r"}``
 	// args := os.Args[1:]
 	args := []string{"sample.r"}
 	if len(args) < 1 {
