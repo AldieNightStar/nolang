@@ -5,8 +5,12 @@ import (
 )
 
 func Load(code string) *Scope {
-	toks := golexem.Parse(code)
+	var toks []any
+	var labels map[string]int
+	toks = golexem.Parse(code)
 	toks = filterComments(toks)
+	toks, labels = processLabelDefs(toks)
+	toks = processLabelPointers(labels, toks)
 	return NewScope(toks)
 }
 
