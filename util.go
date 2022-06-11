@@ -163,3 +163,59 @@ func StepAndCast4[A any, B any, C any, D any](s *Scope, def1 A, def2 B, def3 C, 
 	}
 	return val1, val2, val3, val4, nil
 }
+
+func ValueGetter(f func() (any, error)) NoFunc {
+	return func(s *Scope) (any, error) {
+		return f()
+	}
+}
+
+func ValueSetter(f func(any) error) NoFunc {
+	return func(s *Scope) (any, error) {
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		return nil, f(v)
+	}
+}
+
+func NoFunc1[A any](def A, f func(A) (any, error)) NoFunc {
+	return func(s *Scope) (any, error) {
+		v, err := StepAndCast(s, def)
+		if err != nil {
+			return nil, err
+		}
+		return f(v)
+	}
+}
+
+func NoFunc2[A any, B any](def1 A, def2 B, f func(A, B) (any, error)) NoFunc {
+	return func(s *Scope) (any, error) {
+		v1, v2, err := StepAndCast2(s, def1, def2)
+		if err != nil {
+			return nil, err
+		}
+		return f(v1, v2)
+	}
+}
+
+func NoFunc3[A any, B any, C any](def1 A, def2 B, def3 C, f func(A, B, C) (any, error)) NoFunc {
+	return func(s *Scope) (any, error) {
+		v1, v2, v3, err := StepAndCast3(s, def1, def2, def3)
+		if err != nil {
+			return nil, err
+		}
+		return f(v1, v2, v3)
+	}
+}
+
+func NoFunc4[A any, B any, C any, D any](def1 A, def2 B, def3 C, def4 D, f func(A, B, C, D) (any, error)) NoFunc {
+	return func(s *Scope) (any, error) {
+		v1, v2, v3, v4, err := StepAndCast4(s, def1, def2, def3, def4)
+		if err != nil {
+			return nil, err
+		}
+		return f(v1, v2, v3, v4)
+	}
+}
