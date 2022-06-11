@@ -1,4 +1,8 @@
-:a
-    print "YEP"
-    sleep 1
-goto @a
+call @test
+call @test
+call @test
+ret
+
+:test
+    print concat concat "YES" "-" "NO"
+    ret

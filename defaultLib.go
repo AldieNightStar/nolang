@@ -144,8 +144,27 @@ func defaultJumpLibrary(s *Scope) {
 		s.Pos = int(n)
 		return nil, nil
 	})
-	s.Mem["end"] = NoFunc(func(s *Scope) (any, error) {
-		return nil, newError(ErrCodeEnd, s.LastLine)
+	s.Mem["ret"] = NoFunc(func(s *Scope) (any, error) {
+		pos, ok := s.CallStack.Pop(0)
+		if !ok {
+			return nil, newError(ErrCodeEnd, s.LastLine)
+		}
+		s.Pos = pos
+		return nil, nil
+	})
+	s.Mem["call"] = NoFunc(func(s *Scope) (any, error) {
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		n, ok := v.(float64)
+		if !ok {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		newPos := int(n)
+		s.CallStack.Push(s.Pos)
+		s.Pos = newPos
+		return nil, nil
 	})
 }
 
