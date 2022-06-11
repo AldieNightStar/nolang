@@ -2,6 +2,7 @@ package nolang
 
 import (
 	"fmt"
+	"time"
 )
 
 func defaultLib(s *Scope) {
@@ -9,6 +10,8 @@ func defaultLib(s *Scope) {
 	defaultMemLib(s)
 	defaultMathLib(s)
 	defaultBoolLib(s)
+	defaultJumpLibrary(s)
+	defaultTimeLibrary(s)
 }
 
 func defaultMemLib(s *Scope) {
@@ -125,5 +128,38 @@ func defaultLibMathOpFunc(f func(a, b float64) float64) NoFunc {
 			return nil, newError(ErrWrongType, s.LastLine)
 		}
 		return f(n1, n2), nil
+	})
+}
+
+func defaultJumpLibrary(s *Scope) {
+	s.Mem["goto"] = NoFunc(func(s *Scope) (any, error) {
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		n, ok := v.(float64)
+		if !ok {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		s.Pos = int(n)
+		return nil, nil
+	})
+	s.Mem["end"] = NoFunc(func(s *Scope) (any, error) {
+		return nil, newError(ErrCodeEnd, s.LastLine)
+	})
+}
+
+func defaultTimeLibrary(s *Scope) {
+	s.Mem["sleep"] = NoFunc(func(s *Scope) (any, error) {
+		v, err := s.Step()
+		if err != nil {
+			return nil, err
+		}
+		n, ok := v.(float64)
+		if !ok {
+			return nil, newError(ErrWrongType, s.LastLine)
+		}
+		time.Sleep(time.Duration(float64(time.Second) * n))
+		return nil, nil
 	})
 }

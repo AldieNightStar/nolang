@@ -1,2 +1,4 @@
-print "Hello!"
-:test print @test
+:a
+    print "YEP"
+    sleep 1
+goto @a
